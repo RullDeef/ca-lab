@@ -5,8 +5,10 @@ from gui import App
 
 
 def best_sqr_approx(X: list, Y: list, W: list, n: int):
-    n += 1
     N = len(X)
+    n += 1
+    if n >= N:
+        n = N
 
     Y_hat = array([[
         sum(W[k] * Y[k] * X[k] ** i for k in range(N))

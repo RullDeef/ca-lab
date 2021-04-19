@@ -2,6 +2,7 @@ from numpy import linspace, array
 from numpy.linalg import solve
 from typing import Callable as func
 from typing import List
+from math import cos, pi
 
 
 # Возвращает значение полинома Лежандра n-го порядка
@@ -11,19 +12,19 @@ def legendre(n: int, x: float) -> float:
     return ((2 * n - 1) * x * P1 - (n - 1) * P2) / n
 
 
+# возвращает значение производной полинома Лежандра
+def legendre_prime(n: int, x: float) -> float:
+    P1, P2 = legendre(n - 1, x), legendre(n, x)
+    return n / (1 - x * x) * (P1 - x * P2)
+
+
 # Нахождение корней полинома Лежандра n-го порядка
 def legendre_roots(n: int, eps: float = 1e-12) -> List[float]:
-    roots = [0] * n
-    sections = linspace(-1, 1, n + 1)
-    sections = zip(sections[:-1], sections[1:])
-    for i, (a, b) in enumerate(sections):  # уточнение корней
-        root = (a + b) / 2
+    roots = [cos(pi * (4 * i + 3) / (4 * n + 2)) for i in range(n)]
+    for i, root in enumerate(roots):  # уточнение корней
         root_val = legendre(n, root)
-        a_val = legendre(n, a)
         while abs(root_val) > eps:
-            if a_val * root_val < 0: b = root
-            else: a, a_val = root, root_val
-            root = (a + b) / 2
+            root -= root_val / legendre_prime(n, root)
             root_val = legendre(n, root)
         roots[i] = root
     return roots
